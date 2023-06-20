@@ -12,7 +12,8 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        $articles=Article::all();
+        return view('articles.index',['articles'=>$articles]);
     }
 
     /**
@@ -28,7 +29,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->file('featured_image')) {
+        if ($request->file('image')) {
             $image_name = $request->file('image')->store('images', 'public');
         }
 
@@ -51,7 +52,7 @@ class ArticleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Article $article)
+    public function edit($id)
     {
         $article = Article::find($id);
         return view('articles.edit', ['article' => $article]);
@@ -63,11 +64,12 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $article = Article::find($id);
+
         $article->title = $request->title;
         $article->content = $request->content;
 
-        if ($article->featured_image && file_exists(storage_path('app/public/' . $article->featured_image))) {
-            Storage::delete('public/' . $article->featured_image);
+        if ($article->image && file_exists(storage_path('app/public/' . $article->featured_image))) {
+            Storage::delete('public/' . $article->image);
         }
         $image_name = $request->file('image')->store('images', 'public');
         $article->featured_image = $image_name;
